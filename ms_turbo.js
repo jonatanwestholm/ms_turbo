@@ -54,6 +54,21 @@ class Game{
                 this.cells[y][x].className = 'cell ' + className;
             }
         }
+        set_message(`${this.remaining_mines()} mines left`);
+    }
+
+    remaining_mines(){
+        var visible_mines = 0;
+        for (let y = 0; y < this.height; y++){
+            for (let x = 0; x < this.width; x++){
+                if (this.visible[y][x]){
+                    if (this.label[y][x] == 9){
+                        visible_mines++;
+                    }
+                }
+            }
+        }
+        return this.num_mines - visible_mines;
     }
 
     mount(gameElement){
@@ -95,6 +110,9 @@ class Game{
                 this.open_tile(x, y, 1);
                 //alert(`Right-clicked (${x}, ${y})`);
                 break;
+        }
+        if (this.remaining_mines() == 0){
+            set_message("You won!");
         }
     }
 
@@ -142,9 +160,13 @@ function newGame(event) {
 
     if (easy){
         game = new Game(20, 20, 72);
+        set_message(`Created easy game.\n${game.remaining_mines()} mines left`);
     }else{
         game = new Game(30, 16, 99);
+        set_message(`Created hard game.\n${game.remaining_mines()} mines left`);
     }
+
+
     //game.mount(gameElement);
     //updateSettings();
     updateSize();
@@ -163,4 +185,7 @@ function updateSize() {
     }
 }
 
-//newGame();
+function set_message(message){
+    document.getElementById("message").value = message;
+}
+
