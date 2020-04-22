@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MS Turbo</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game"></div>
+    <script src="ms_turbo.js"></script>
+    <form id="form" onsubmit="newGame(event)">
+        <input type="radio" id="easy" name="difficulty" value="easy" checked>
+        <label for="easy">easy</label><br>            
+        <input type="radio" id="hard" name="difficulty" value="hard">
+        <label for="hard">hard</label><br>
+        <input type=submit value="new game" onsubmit="newGame(event)">
+    </form>
+</body>
+</html>
