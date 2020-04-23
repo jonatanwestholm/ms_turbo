@@ -1,8 +1,15 @@
+const State = {
+    PLAYING: "PLAYING",
+    WON: "WON",
+    DEAD: "DEAD",
+};
+
 class Game{
     constructor(width, height, num_mines){
         this.width = width;
         this.height = height;
         this.num_mines = num_mines;
+        this.state = State.PLAYING;
 
         const gameElement = document.getElementById("game");
         this.mount(gameElement);
@@ -54,7 +61,9 @@ class Game{
                 this.cells[y][x].className = 'cell ' + className;
             }
         }
-        set_message(`${this.remaining_mines()} mines left`);
+        if (this.state == State.PLAYING){
+            set_message(`${this.remaining_mines()} mines left`);
+        }
     }
 
     remaining_mines(){
@@ -111,8 +120,9 @@ class Game{
                 //alert(`Right-clicked (${x}, ${y})`);
                 break;
         }
-        if (this.remaining_mines() == 0){
+        if (this.remaining_mines() == 0 && this.state == State.PLAYING){
             set_message("You won!");
+            this.state = State.WON;
         }
     }
 
@@ -125,7 +135,13 @@ class Game{
 }
 
 function parse_response(game, json){
-    var tiles = JSON.parse(json).tiles;
+    json = JSON.parse(json);
+    if (json.dead == "true" && game.state == State.PLAYING){
+        game.state = State.DEAD;
+        set_message("You are dead.");
+        return;
+    }
+    var tiles = json.tiles;
     let tile;
     let i;
     for (i in tiles){

@@ -85,7 +85,9 @@ class Board(nx.Graph):
 
     def sweep(self, board, node):
         adj = board.open(node)
+        dead = adj is None
         self.update(node, adj)
+        return dead
 
     def flag(self, node):
         self.nodes[node]["mine"] = 1
@@ -158,7 +160,7 @@ class Board(nx.Graph):
                             adj = board.open(neigh)
                             self.update(neigh, adj)
                             if adj is None:
-                                return
+                                return None
                     if center is not None:
                         nodes.update(list(self[node]))
                         nodes.update(flatten([self[nd] for nd in self[node]]))
@@ -166,6 +168,7 @@ class Board(nx.Graph):
 
             else:
                 break
+        return True
 
     def exhaust_inf(self, board):
         if not self.use_sat:
@@ -290,14 +293,20 @@ class Game:
         return tiles
 
     def open(self, x, y):
-        self.solution.sweep(self.board, (y, x))
-        self.solution.exhaust_1(self.board)
-        return self.get_new_tiles()
+        dead = self.solution.sweep(self.board, (y, x))
+        if dead:
+            return None
+        else:
+            self.solution.exhaust_1(self.board)
+            return self.get_new_tiles()
 
     def flag(self, x, y):
         self.solution.flag((y, x))
-        self.solution.exhaust_1(self.board)
-        return self.get_new_tiles()
+        alive = self.solution.exhaust_1(self.board)
+        if not alive:
+            return None
+        else:
+            return self.get_new_tiles()
 
 
 def get_workable(N, M, S):

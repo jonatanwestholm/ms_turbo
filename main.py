@@ -78,7 +78,11 @@ def open_tile(x, y, action):
         tiles = game.open(x, y)
     else:
         tiles = game.flag(x, y)
-    return {"tiles": [{"x": x, "y": y, "label": label} for x, y, label in tiles]}
+    
+    if tiles is None:
+        return {"dead": "true"}
+    else:
+        return {"dead": "false", "tiles": [{"x": x, "y": y, "label": label} for x, y, label in tiles]}
             
 
 '''
